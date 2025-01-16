@@ -1,0 +1,17 @@
+{
+  "name": "events-booking-app",
+  "version": "1.0.0",
+  "description": "This is a events booking system, Users can booking an event",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "safwanamani",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
+  }
+}
