@@ -13,7 +13,6 @@ exports.bookEvent = async (req, res) => {
       "SELECT name, capacity FROM events WHERE id = ?",
       [eventId]
     );
-    console.log("Event", event);
     if (!event) {
       await connection.rollback();
       return res.status(404).json({ error: "Event not found" });
