@@ -13,4 +13,12 @@ const createEventSchema = Joi.object({
   }),
 });
 
-module.exports = { createEventSchema };
+const bookEventSchema = Joi.object({
+  userId: Joi.number().integer().min(1).required().messages({
+    "number.base": "userId should be a number",
+    "number.min": "userId should be at least 1",
+    "any.required": "userId is required",
+  }),
+});
+
+module.exports = { createEventSchema, bookEventSchema };
