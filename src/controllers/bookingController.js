@@ -62,8 +62,40 @@ exports.bookEvent = async (req, res) => {
     if (error.code === "ER_DUP_ENTRY") {
       return res.status(400).json({ error: "User already booked" });
     }
-    return res.status(500).json({ error: error });
+    return res.status(500).json({ error: error.message });
   } finally {
     connection.release();
+  }
+};
+
+exports.getBookingCount = async (req, res) => {
+  let { eventId } = req.params;
+
+  try {
+    const [[event]] = await pool.query("SELECT id FROM events WHERE id = ?", [
+      eventId,
+    ]);
+    if (!event) {
+      return res.status(404).json({
+        error: "Event is not found",
+      });
+    }
+    let bookingCount = await redisClient.get(`event-count:${eventId}`);
+    if (!bookingCount | (bookingCount == 0)) {
+      bookingCount = (
+        await pool.query(
+          "SELECT COUNT(*) AS count FROM bookings WHERE event_id = ?",
+          [eventId]
+        )
+      )[0][0].count;
+      await redisClient.set(`event-count:${eventId}`, bookingCount);
+    }
+
+    return res.status(200).json({
+      eventId,
+      bookingCount: parseInt(bookingCount),
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };
