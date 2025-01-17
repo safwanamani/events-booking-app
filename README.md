@@ -45,6 +45,7 @@ npm install
 ### 3. Configure Environment Variables
 Create a .env file in the project root and configure the following:
 ```plaintext
+PORT=4000
 # MySQL
 DB_HOST=localhost
 DB_USER=root
