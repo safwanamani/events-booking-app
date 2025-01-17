@@ -1,17 +1,19 @@
 const pool = require("../models/db");
+const { sendToQueue } = require("../services/rabbitmqService");
 const redisClient = require("../services/redisService");
 
 exports.bookEvent = async (req, res) => {
   let { eventId } = req.params;
-  let { userId } = req.body;
+  let { userId, userName } = req.body;
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
 
     const [[event]] = await connection.query(
-      "SELECT capacity FROM events WHERE id = ?",
+      "SELECT name, capacity FROM events WHERE id = ?",
       [eventId]
     );
+    console.log("Event", event);
     if (!event) {
       await connection.rollback();
       return res.status(404).json({ error: "Event not found" });
@@ -50,6 +52,12 @@ exports.bookEvent = async (req, res) => {
     await redisClient.set(`event-count:${eventId}`, bookingCount + 1);
 
     await connection.commit();
+
+    const emailMessage = {
+      userName,
+      eventName: event.name,
+    };
+    await sendToQueue(emailMessage);
 
     return res.status(201).json({
       message: "Successfully booked",

@@ -15,9 +15,14 @@ const createEventSchema = Joi.object({
 
 const bookEventSchema = Joi.object({
   userId: Joi.number().integer().min(1).required().messages({
-    "number.base": "userId should be a number",
-    "number.min": "userId should be at least 1",
-    "any.required": "userId is required",
+    "number.base": "User id should be a number",
+    "number.min": "User id should be at least 1",
+    "any.required": "User id is required",
+  }),
+  userName: Joi.string().min(3).max(50).required().messages({
+    "string.min": "User name should have at least 3 characters",
+    "string.max": "User name should not exceed 50 characters",
+    "any.required": "User name is required",
   }),
 });
 
